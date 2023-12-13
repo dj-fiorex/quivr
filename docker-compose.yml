@@ -1,5 +1,9 @@
 version: "3.8"
 
+networks:
+  ai:
+    external: true
+
 services:
   frontend:
     image: quivr-frontend-prebuilt
