@@ -4,6 +4,8 @@ services:
   frontend:
     image: quivr-frontend-prebuilt
     pull_policy: never
+    networks:
+      - ai
     build:
       context: frontend
       dockerfile: Dockerfile
@@ -21,12 +23,13 @@ services:
     ports:
       - 3000:3000
       
-
   backend-core:
     image: stangirard/quivr-backend-prebuilt:latest
     pull_policy: if_not_present
     env_file:
       - .env
+    networks:
+      - ai
     build:
       context: backend
       dockerfile: Dockerfile
@@ -57,6 +60,8 @@ services:
   redis:
     image: redis:latest
     container_name: redis
+    networks:
+      - ai
     restart: always
     ports:
       - 6379:6379
@@ -69,6 +74,8 @@ services:
     image: stangirard/quivr-backend-prebuilt:latest
     env_file:
       - .env
+    networks:
+      - ai
     build:
       context: backend
       dockerfile:  Dockerfile
@@ -84,6 +91,8 @@ services:
     pull_policy: if_not_present
     env_file:
       - .env
+    networks:
+      - ai
     build:
       context: backend
       dockerfile:  Dockerfile
@@ -98,6 +107,8 @@ services:
     pull_policy: if_not_present
     env_file:
       - .env
+    networks:
+      - ai
     build:
       context: backend
       dockerfile:  Dockerfile
@@ -126,6 +137,8 @@ services:
       timeout: 5s
       interval: 5s
       retries: 3
+    networks:
+      - ai
     depends_on:
       analytics:
         condition: service_healthy
@@ -158,6 +171,8 @@ services:
     ports:
       - ${KONG_HTTP_PORT}:8000/tcp
       - ${KONG_HTTPS_PORT}:8443/tcp
+    networks:
+      - ai
     depends_on:
       analytics:
         condition: service_healthy
@@ -180,6 +195,8 @@ services:
   auth:
     container_name: supabase-auth
     image: supabase/gotrue:v2.99.0
+    networks:
+      - ai
     depends_on:
       db:
         # Disable this if you are using an external Postgres database
@@ -239,6 +256,8 @@ services:
   rest:
     container_name: supabase-rest
     image: postgrest/postgrest:v11.2.2
+    networks:
+      - ai
     depends_on:
       db:
         # Disable this if you are using an external Postgres database
@@ -260,6 +279,8 @@ services:
     # This container name looks inconsistent but is correct because realtime constructs tenant id by parsing the subdomain
     container_name: realtime-dev.supabase-realtime
     image: supabase/realtime:v2.25.35
+    networks:
+      - ai
     depends_on:
       db:
         # Disable this if you are using an external Postgres database
@@ -300,6 +321,8 @@ services:
   storage:
     container_name: supabase-storage
     image: supabase/storage-api:v0.43.11
+    networks:
+      - ai
     depends_on:
       db:
         # Disable this if you are using an external Postgres database
@@ -359,6 +382,8 @@ services:
   meta:
     container_name: supabase-meta
     image: supabase/postgres-meta:v0.68.0
+    networks:
+      - ai
     depends_on:
       db:
         # Disable this if you are using an external Postgres database
@@ -378,6 +403,8 @@ services:
     container_name: supabase-edge-functions
     image: supabase/edge-runtime:v1.22.4
     restart: unless-stopped
+    networks:
+      - ai
     depends_on:
       analytics:
         condition: service_healthy
@@ -405,6 +432,8 @@ services:
       interval: 5s
       retries: 10
     restart: unless-stopped
+    networks:
+      - ai
     depends_on:
       db:
         # Disable this if you are using an external Postgres database
@@ -455,6 +484,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - ai
     depends_on:
       vector:
         condition: service_healthy
@@ -495,6 +526,8 @@ services:
   vector:
     container_name: supabase-vector
     image: timberio/vector:0.28.1-alpine
+    networks:
+      - ai
     healthcheck:
       test:
         [
